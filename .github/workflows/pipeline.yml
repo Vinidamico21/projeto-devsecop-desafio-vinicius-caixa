@@ -29,6 +29,14 @@ jobs:
         with:
           node-version: '18'
 
+      - name: 🔧 Limpar configuração de proxy NPM
+        run: |
+          npm config set registry https://registry.npmjs.org/
+          npm config set proxy null
+          npm config set https-proxy null
+          npm config set strict-ssl true
+          npm cache clean --force
+
       - name: ⚙️ Instalar dependências
         run: |
           npm ci
