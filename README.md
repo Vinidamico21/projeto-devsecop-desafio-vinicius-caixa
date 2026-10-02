@@ -47,8 +47,11 @@ Detecta credenciais acidentalmente commitadas como:
 **Exemplo de o que ele encontraria:**
 ```javascript
 // ❌ RUIM - Gitleaks detectaria isso
-const API_KEY = "sk_live_1234567890abcdef"
-const PASSWORD = "admin123"
+const DATABASE_PASSWORD = "prod_password_123"
+const API_TOKEN = process.env.API_KEY  // Se não usar variável de ambiente
+
+// ✅ BOM - Usar variáveis de ambiente
+const API_TOKEN = process.env.API_KEY
 ```
 
 ### 3. Static Analysis (Semgrep)
