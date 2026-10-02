@@ -2,9 +2,15 @@
   "name": "projeto-devsecops-desafio",
   "version": "1.0.0",
   "description": "Projeto de desafio DevSecOps - ADA Tech",
+  "scripts": {
+    "build": "node scripts/build.js"
+  },
   "dependencies": {
-    "lodash": "4.17.4",
-    "express": "4.17.1",
-    "axios": "0.21.1"
+    "lodash": "4.18.0",
+    "express": "4.21.2"
+  },
+  "overrides": {
+    "path-to-regexp": "0.1.13",
+    "qs": "6.16.0"
   }
 }

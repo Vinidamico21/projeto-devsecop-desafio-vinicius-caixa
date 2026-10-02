@@ -28,39 +28,50 @@ jobs:
         run: |
           echo "Nenhum segredo a ser inserido no código"
 
-      - name: ⚙️ Build
+      - name: ⚙️ Instalar dependências
         run: |
-          echo "Verificando arquivos..."
-          ls src/
-          echo "Build OK!"
+          npm ci
 
-      # ❌ PASSO A IMPLEMENTAR — Secrets Scanning com Gitleaks
-      # Dica: use a action oficial "gitleaks/gitleaks-action@v2" e passe o
-      - name: 🔑 Secrets Scanning
-        run: echo "TODO - implemente o Secrets Scanning com Gitleaks aqui"
+      - name: ⚙️ Build real
+        run: |
+          npm run build
+          test -d dist
+          echo "Build concluído com sucesso. Diretório de saída: dist"
 
-      # ❌ PASSO A IMPLEMENTAR — SAST com Semgrep
-      # Dica: instale com "pip install semgrep" e rode
-      #   semgrep scan --config auto --config p/xss --error src/
-      - name: 🔍 SAST - Semgrep
-        run: echo "TODO - implemente o SAST com Semgrep aqui"
+       # ✅ Secrets Scanning com Gitleaks
+       # Detecta credenciais, tokens e outras informações sensíveis no código
+       - name: 🔑 Secrets Scanning com Gitleaks
+         uses: gitleaks/gitleaks-action@v2
+         env:
+           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # ❌ PASSO A IMPLEMENTAR — SCA com Grype
-      # Dica: primeiro, gere o package-lock pelo npm:
-      #   npm install --package-lock-only --no-audit --no-fund
-      # Depois instale o Grype:
-      #   curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b /usr/local/bin
-      # E rode:
-      #   grype dir:. --fail-on medium
-      - name: 📦 SCA - Grype
-        run: echo "TODO - implemente o SCA com Grype aqui"
+       # ✅ SAST com Semgrep
+       # Detecta vulnerabilidades como XSS, code injection, eval(), etc.
+       - name: 🔍 SAST - Semgrep
+         run: |
+           pip install semgrep
+           semgrep scan --config auto --config p/xss --error src/
+
+       # ✅ SCA com Grype
+       # Verifica dependências vulneráveis (supply chain security)
+       - name: 📦 Gerar package-lock.json
+         run: |
+           npm install --package-lock-only --no-audit --no-fund
+       
+       - name: 📦 Instalar Grype
+         run: |
+           curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b /usr/local/bin
+       
+       - name: 📦 SCA - Grype
+         run: |
+           grype dir:. --fail-on medium
 
       # ── Empacota o site em um artefato tar (formato que o Pages consome)
       - name: 📦 Empacotar artefato do site
         run: |
           tar \
             --dereference --hard-dereference \
-            -C src \
+            -C dist \
             -cvf artifact.tar \
             --exclude=.git --exclude=.github \
             .
@@ -110,7 +121,8 @@ jobs:
 
     steps:
       - name: ⬇️ Baixar o artefato assinado
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.1.3
+
         with:
           name: site-assinado
 
