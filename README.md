@@ -122,6 +122,6 @@ Com essa pipeline:
 
 ## URL de Produção
 🚀 Acesse a aplicação em produção:
-https://vinidamico21.github.io/projeto-devsecop-desafio-vinicius-caixa/
+
 
 A pipeline dispara a cada push para `main` e publica automaticamente no GitHub Pages após passar em todas as verificações de segurança.
